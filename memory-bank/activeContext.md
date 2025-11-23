@@ -1,13 +1,14 @@
-# Active Context: Advanced Visualization Feature Complete
+# Active Context: Bug Fix and Edge Case Handling
 
-The advanced visualization feature has been successfully implemented, tested, and verified. The application now provides a more detailed, interactive, and robust understanding of loan amortization and investment growth.
+A critical bug and additional edge cases have been identified in the financial calculation logic. The application is being updated to address these issues and improve its accuracy and robustness.
 
-**Completed Work:**
-
-- **Backend:** The `generate_visualization_data` service has been updated to return a monthly breakdown of compounded investment growth.
-- **Frontend:** The `VisualizationCard` component has been re-implemented with a `ComposedChart` to display a stacked bar chart for principal and interest, an overlaid line chart for the ending balance, and a monthly investment growth chart. Both charts have been enlarged and made interactive with zooming and panning controls.
-- **Fool-Proofing:** Enhanced input validation, error handling, and type safety measures have been implemented across the application.
+**Current Work:**
+- **Bug Fix:** The `compare_prepay_vs_invest_pv` function is being modified to use the new, shorter loan tenure for investment calculations.
+- **Edge Case Handling:**
+    - The `generate_visualization_data` function will be updated to ensure investment growth calculations do not extend beyond the new loan tenure.
+    - The `amortization_schedule` function will be enhanced to prevent negative loan balances by adjusting the final extra payment.
 
 **Next Steps:**
-- Commit the changes to the project's version control system.
-- Push the updates to the remote repository.
+- Implement and test the backend logic fixes for the bug and edge cases.
+- Verify the corrected calculations in the frontend visualizations.
+- Commit and push the updates to the remote repository.

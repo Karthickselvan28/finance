@@ -43,10 +43,14 @@ def amortization_schedule(principal: float, annual_rate: float, tenure_months: i
             extra += extra_yearly
 
         opening = balance
+        if (principal_component + extra) > balance:
+            extra = balance - principal_component
+            if extra < 0:
+                extra = 0
+        
         balance -= (principal_component + extra)
         if balance < 0:
-            # adjust last payment so we don't go negative
-            principal_component += balance  # balance is negative
+            principal_component += balance
             balance = 0
 
         closing = balance
@@ -137,18 +141,19 @@ def compare_prepay_vs_invest_pv(principal: float, annual_rate: float, tenure_mon
     # PV of interest saved
     pv_interest_saved = present_value_of_cashflows(saved, discount_rate_monthly)
 
-    # PV of investing extra_monthly: we treat extra_monthly as outflow invested each month for the original loan tenure
+    # PV of investing extra_monthly: we treat extra_monthly as outflow invested each month for the new loan tenure
     # future value of each monthly investment can be computed, but easier: compute PV of monthly investments as sum of discounted cashflows
-    invest_cashflows = [extra_monthly for _ in range(tenure_months)]
+    new_tenure_months = len(schedule_with_extra)
+    invest_cashflows = [extra_monthly for _ in range(new_tenure_months)]
     pv_of_investments = present_value_of_cashflows(invest_cashflows, discount_rate_monthly)
 
     # For clarity, we also compute future value of investing extra_monthly monthly at nominal investment_return_annual
     r = investment_return_annual / (12 * 100)
     future_value = 0.0
     if r == 0:
-        future_value = extra_monthly * tenure_months
+        future_value = extra_monthly * new_tenure_months
     else:
-        future_value = extra_monthly * (((1 + r) ** tenure_months - 1) / r)
+        future_value = extra_monthly * (((1 + r) ** new_tenure_months - 1) / r)
 
     # Decision
     if pv_interest_saved > pv_of_investments:
@@ -192,7 +197,9 @@ def generate_visualization_data(principal: float, annual_rate: float, tenure_mon
     invest_monthly_rate = investment_return_annual / (12 * 100)
     current_investment_value = 0
     
-    for month in range(1, tenure_months + 1):
+    new_tenure_months = len(amortization_data_raw)
+
+    for month in range(1, new_tenure_months + 1):
         current_investment_value += extra_monthly
         current_investment_value *= (1 + invest_monthly_rate)
         investment_schedule.append({
