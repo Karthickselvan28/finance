@@ -9,7 +9,7 @@ import { LoanInputs, CalculationResults } from "@/types/loan";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-const API_BASE_URL = "http://localhost:8000";
+export const API_BASE_URL = "https://api.playfpl.com/finance";
 
 const Index = () => {
   const [results, setResults] = useState<CalculationResults | null>(null);
@@ -59,8 +59,13 @@ const Index = () => {
         } else {
           errors.push("Failed to calculate prepayment impact");
         }
-      } else if (inputs.extra_monthly === undefined || inputs.extra_monthly === 0) {
-        errors.push("Extra monthly payment not provided - skipping prepayment analysis");
+      } else if (
+        inputs.extra_monthly === undefined ||
+        inputs.extra_monthly === 0
+      ) {
+        errors.push(
+          "Extra monthly payment not provided - skipping prepayment analysis"
+        );
       }
 
       // Calculate Investment Comparison (if all optional params are provided)
@@ -70,18 +75,21 @@ const Index = () => {
         inputs.investment_return_annual &&
         inputs.inflation_annual !== undefined
       ) {
-        const investmentResponse = await fetch(`${API_BASE_URL}/prepay-vs-invest`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            principal: inputs.principal,
-            annual_rate: inputs.annual_rate,
-            tenure_months: inputs.tenure_months,
-            extra_monthly: inputs.extra_monthly,
-            investment_return_annual: inputs.investment_return_annual,
-            inflation_annual: inputs.inflation_annual,
-          }),
-        });
+        const investmentResponse = await fetch(
+          `${API_BASE_URL}/prepay-vs-invest`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              principal: inputs.principal,
+              annual_rate: inputs.annual_rate,
+              tenure_months: inputs.tenure_months,
+              extra_monthly: inputs.extra_monthly,
+              investment_return_annual: inputs.investment_return_annual,
+              inflation_annual: inputs.inflation_annual,
+            }),
+          }
+        );
 
         if (investmentResponse.ok) {
           newResults.investment = await investmentResponse.json();
@@ -92,13 +100,17 @@ const Index = () => {
         !inputs.investment_return_annual ||
         inputs.inflation_annual === undefined
       ) {
-        errors.push("Investment return or inflation rate not provided - skipping investment analysis");
+        errors.push(
+          "Investment return or inflation rate not provided - skipping investment analysis"
+        );
       }
 
       newResults.errors = errors;
       setResults(newResults);
     } catch (error) {
-      toast.error("Connection error. Please ensure the backend server is running.");
+      toast.error(
+        "Connection error. Please ensure the backend server is running."
+      );
       console.error("API Error:", error);
     } finally {
       setIsLoading(false);
@@ -135,16 +147,22 @@ const Index = () => {
                     Ready to Calculate
                   </h3>
                   <p className="text-muted-foreground">
-                    Enter your loan details and click Calculate to see your results
+                    Enter your loan details and click Calculate to see your
+                    results
                   </p>
                 </div>
               </div>
             )}
 
             {results && results.errors && results.errors.length > 0 && (
-              <Alert variant="default" className="border-warning/50 bg-warning/5">
+              <Alert
+                variant="default"
+                className="border-warning/50 bg-warning/5"
+              >
                 <AlertCircle className="h-4 w-4 text-warning" />
-                <AlertTitle className="text-warning">Partial Results</AlertTitle>
+                <AlertTitle className="text-warning">
+                  Partial Results
+                </AlertTitle>
                 <AlertDescription className="text-sm text-muted-foreground">
                   <ul className="list-disc list-inside space-y-1 mt-2">
                     {results.errors.map((error, index) => (
@@ -156,8 +174,12 @@ const Index = () => {
             )}
 
             {results?.emi && <EMISummaryCard data={results.emi} />}
-            {results?.prepayment && <PrepaymentCard data={results.prepayment} />}
-            {results?.investment && <InvestmentRecommendationCard data={results.investment} />}
+            {results?.prepayment && (
+              <PrepaymentCard data={results.prepayment} />
+            )}
+            {results?.investment && (
+              <InvestmentRecommendationCard data={results.investment} />
+            )}
             {loanDetails && <VisualizationCard loanDetails={loanDetails} />}
           </div>
         </div>
